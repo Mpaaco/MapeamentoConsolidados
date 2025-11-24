@@ -16,17 +16,19 @@ function Sbar() {
 
   return (
     <Sidebar>
-      <img src="/src/assets/logo.png" alt="logo" />
+      <div className="logo-container">
+        <img src="/src/assets/logo.png" alt="logo" />
+      </div>
 
       <div className="lista">
 
-        <div className="titulo">
+        <div className="titulo active">
           <img src="/src/assets/Component.png" alt="componente" />
           <h2>Navegação</h2>
         </div>
 
         <ul>
-          <li>
+          <li className="active">
             <img src="/src/assets/Home.png" alt="home" />
             <a href="#">Home</a>
           </li>
@@ -56,11 +58,13 @@ function Sbar() {
       <hr />
 
       <div className="owner">
-        <img src="/src/assets/owner.png" alt="owner" />
+        <div className="info">
+          <img src="/src/assets/owner.png" alt="owner" />
 
-        <div className="text">
-          <h2>Diego Rocha</h2>
-          <p>PIC</p>
+          <div className="text">
+            <h2>Diego Rocha</h2>
+            <p>PC</p>
+          </div>
         </div>
 
         {/* TRÊS BOLINHAS */}
