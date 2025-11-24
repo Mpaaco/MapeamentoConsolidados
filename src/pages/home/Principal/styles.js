@@ -11,6 +11,15 @@ export const Principal = styled.div`
   box-sizing: border-box;
 `;
 
+export const Conteudo = styled.div`
+display: flex;
+align-items:center;
+justify-content: space-between;
+flex-direction: column;
+gap: 25px;
+
+`
+
 export const Header = styled.header`
   h1 {
     font-size: 26px;
@@ -57,17 +66,19 @@ export const MetricCard = styled.div`
 `;
 
 export const SearchBar = styled.div`
-  background: white;
-  border-radius: 25px;
-  padding: 10px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  width: 450px;
-  text-align: center;
-  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  width: 300px;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 
-  p {
-    margin: 0;
-    color: #999;
+  input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
     font-size: 14px;
   }
 `;
@@ -76,8 +87,9 @@ export const CategorySelector = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 600px;
-  margin-top: 20px;
+  width: 800px;
+  background: white;
+  padding: 25px;
 
   h3 {
     font-size: 18px;
@@ -99,13 +111,13 @@ export const CategoryLevel = styled.div`
     font-weight: 500;
   }
 
-  .selector {
+  select {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 8px 12px;
     cursor: pointer;
     transition: border-color 0.2s;
@@ -132,6 +144,12 @@ export const DescriptionSection = styled.div`
   align-items: flex-start;
   margin-top: 30px;
 
+  .descricaocont{
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+
+  }
   .description-text {
     flex: 1;
     h4 {
@@ -147,9 +165,7 @@ export const DescriptionSection = styled.div`
       line-height: 1.5;
     }
   }
-`;
-
-export const StatusTable = styled.table`
+  .statustable{
   width: 250px;
   border-collapse: collapse;
   font-size: 12px;
@@ -173,5 +189,9 @@ export const StatusTable = styled.table`
       color: #333;
     }
   }
+  }
 `;
+
+
+
 
