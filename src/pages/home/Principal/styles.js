@@ -67,19 +67,106 @@ export const MetricCard = styled.div`
 
 export const SearchBar = styled.div`
   display: flex;
-  align-items: center;
-  width: 300px;
-  background: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px 0;
+  position: relative;
+`;
 
-  input {
-    width: 100%;
-    border: none;
+export const SearchInput = styled.input`
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  
+  &:focus {
     outline: none;
+    border-color: #EE4D2D;
+    box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2);
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+export const SearchResults = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+`;
+
+export const SearchResultItem = styled.div`
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+  
+  &:hover {
+    background-color: #f8f8f8;
+  }
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  div {
+    margin: 4px 0;
+    
+    strong {
+      color: #333;
+      margin-right: 5px;
+    }
     background: transparent;
     font-size: 14px;
+  }
+`;
+
+export const Select = styled.select`
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 10px;
+
+  &:hover {
+    border-color: #EE4D2D;
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+`;
+
+export const Option = styled.option`
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  background-color: white;
+  
+  &:disabled {
+    color: #999;
+    font-style: italic;
   }
 `;
 
