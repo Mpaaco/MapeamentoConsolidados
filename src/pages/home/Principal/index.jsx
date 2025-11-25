@@ -24,14 +24,27 @@ function PrincipalComponent() {
   const [categories, setCategories] = useState({
     L0: [],
     L1: {},
-    allData: [] // Armazenar todos os dados originais para busca
+    L2: {},
+    L3: {},
+    L4: {},
+    L5: {},
+    allData: [], // Armazenar todos os dados originais para busca
+    byLanguage: {} // Categorias agrupadas por idioma
   });
 
   // Estados para as seleções
   const [selected, setSelected] = useState({
+    language: '',
     L0: '',
-    L1: ''
+    L1: '',
+    L2: '',
+    L3: '',
+    L4: '',
+    L5: ''
   });
+  
+  // Idiomas disponíveis
+  const availableLanguages = ['English', 'Português'];
   
   // Estado para busca
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,9 +58,23 @@ function PrincipalComponent() {
     setSelected(prev => {
       const newState = { ...prev, [level]: value };
       
-      // Se mudou o L0, limpa o L1
-      if (level === 'L0') {
+      // Se mudou o idioma, limpa todas as seleções
+      if (level === 'language') {
+        newState.L0 = '';
         newState.L1 = '';
+        newState.L2 = '';
+        newState.L3 = '';
+        newState.L4 = '';
+        newState.L5 = '';
+      } else {
+        // Limpar níveis inferiores quando um nível superior é alterado
+        const levels = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'];
+        const currentLevelIndex = levels.indexOf(level);
+        
+        // Limpar todos os níveis abaixo do atual
+        for (let i = currentLevelIndex + 1; i < levels.length; i++) {
+          newState[levels[i]] = '';
+        }
       }
       
       return newState;
@@ -79,6 +106,187 @@ function PrincipalComponent() {
       .trim();
   };
 
+  // Função para obter categorias filtradas por nível
+  const getFilteredCategories = (level) => {
+    // Se não tiver idioma selecionado, não retorna nada
+    if (!selected.language) return [];
+    
+    // Para L0, retorna as categorias do idioma selecionado
+    if (level === 'L0') {
+      return categories.byLanguage[selected.language]?.L0 || [];
+    }
+    
+    // Para L1, filtra as categorias que pertencem ao L0 selecionado e ao idioma
+    if (level === 'L1') {
+      if (!selected.L0) return [];
+      
+      // Filtra as categorias L1 que pertencem ao L0 selecionado e ao idioma
+      const l1ForLanguage = [];
+      categories.allData.forEach(row => {
+        const rowLanguage = row.language?.trim() || 'English';
+        const rowL0 = row.cluster?.trim();
+        const l1Id = row.level1_global_be_category_id?.trim();
+        const l1Name = row.level1_global_be_category?.trim();
+        
+        if (rowLanguage === selected.language && rowL0 === selected.L0 && l1Id && l1Name) {
+          const l1Value = `${l1Id} - ${l1Name}`;
+          if (!l1ForLanguage.includes(l1Value)) {
+            l1ForLanguage.push(l1Value);
+          }
+        }
+      });
+      
+      return l1ForLanguage.sort();
+    }
+    
+    // Para níveis superiores, construímos a chave baseada nas seleções anteriores
+    let parentKey = '';
+    
+    if (level === 'L2') {
+      if (!selected.L0 || !selected.L1) return [];
+      
+      const l2ForLanguage = [];
+      categories.allData.forEach(row => {
+        const rowLanguage = row.language?.trim() || 'English';
+        const rowL0 = row.cluster?.trim();
+        const l1Id = row.level1_global_be_category_id?.trim();
+        const l1Name = row.level1_global_be_category?.trim();
+        const l2Id = row.level2_global_be_category_id?.trim();
+        const l2Name = row.level2_global_be_category?.trim();
+        
+        if (rowLanguage === selected.language && 
+            rowL0 === selected.L0 && 
+            l1Id && l1Name && 
+            `${l1Id} - ${l1Name}` === selected.L1 && 
+            l2Id && l2Name) {
+          
+          const l2Value = `${l2Id} - ${l2Name}`;
+          if (!l2ForLanguage.includes(l2Value)) {
+            l2ForLanguage.push(l2Value);
+          }
+        }
+      });
+      
+      return l2ForLanguage.sort();
+    }
+    
+    if (level === 'L3') {
+      if (!selected.L0 || !selected.L1 || !selected.L2) return [];
+      
+      const l3ForLanguage = [];
+      categories.allData.forEach(row => {
+        const rowLanguage = row.language?.trim() || 'English';
+        const rowL0 = row.cluster?.trim();
+        const l1Id = row.level1_global_be_category_id?.trim();
+        const l1Name = row.level1_global_be_category?.trim();
+        const l2Id = row.level2_global_be_category_id?.trim();
+        const l2Name = row.level2_global_be_category?.trim();
+        const l3Id = row.level3_global_be_category_id?.trim();
+        const l3Name = row.level3_global_be_category?.trim();
+        
+        if (rowLanguage === selected.language && 
+            rowL0 === selected.L0 && 
+            l1Id && l1Name && 
+            `${l1Id} - ${l1Name}` === selected.L1 &&
+            l2Id && l2Name &&
+            `${l2Id} - ${l2Name}` === selected.L2 &&
+            l3Id && l3Name) {
+          
+          const l3Value = `${l3Id} - ${l3Name}`;
+          if (!l3ForLanguage.includes(l3Value)) {
+            l3ForLanguage.push(l3Value);
+          }
+        }
+      });
+      
+      return l3ForLanguage.sort();
+    }
+    
+    if (level === 'L4') {
+      if (!selected.L0 || !selected.L1 || !selected.L2 || !selected.L3) return [];
+      
+      const l4ForLanguage = [];
+      categories.allData.forEach(row => {
+        const rowLanguage = row.language?.trim() || 'English';
+        const rowL0 = row.cluster?.trim();
+        const l1Id = row.level1_global_be_category_id?.trim();
+        const l1Name = row.level1_global_be_category?.trim();
+        const l2Id = row.level2_global_be_category_id?.trim();
+        const l2Name = row.level2_global_be_category?.trim();
+        const l3Id = row.level3_global_be_category_id?.trim();
+        const l3Name = row.level3_global_be_category?.trim();
+        const l4Id = row.level4_global_be_category_id?.trim();
+        const l4Name = row.level4_global_be_category?.trim();
+        
+        if (rowLanguage === selected.language && 
+            rowL0 === selected.L0 && 
+            l1Id && l1Name && 
+            `${l1Id} - ${l1Name}` === selected.L1 &&
+            l2Id && l2Name &&
+            `${l2Id} - ${l2Name}` === selected.L2 &&
+            l3Id && l3Name &&
+            `${l3Id} - ${l3Name}` === selected.L3 &&
+            l4Id && l4Name) {
+          
+          const l4Value = `${l4Id} - ${l4Name}`;
+          if (!l4ForLanguage.includes(l4Value)) {
+            l4ForLanguage.push(l4Value);
+          }
+        }
+      });
+      
+      return l4ForLanguage.sort();
+    }
+    
+    if (level === 'L5') {
+      if (!selected.L0 || !selected.L1 || !selected.L2 || !selected.L3 || !selected.L4) return [];
+      
+      const l5ForLanguage = [];
+      categories.allData.forEach(row => {
+        const rowLanguage = row.language?.trim() || 'English';
+        const rowL0 = row.cluster?.trim();
+        const l1Id = row.level1_global_be_category_id?.trim();
+        const l1Name = row.level1_global_be_category?.trim();
+        const l2Id = row.level2_global_be_category_id?.trim();
+        const l2Name = row.level2_global_be_category?.trim();
+        const l3Id = row.level3_global_be_category_id?.trim();
+        const l3Name = row.level3_global_be_category?.trim();
+        const l4Id = row.level4_global_be_category_id?.trim();
+        const l4Name = row.level4_global_be_category?.trim();
+        const l5Id = row.level5_global_be_category_id?.trim();
+        const l5Name = row.level5_global_be_category?.trim();
+        
+        if (rowLanguage === selected.language && 
+            rowL0 === selected.L0 && 
+            l1Id && l1Name && 
+            `${l1Id} - ${l1Name}` === selected.L1 &&
+            l2Id && l2Name &&
+            `${l2Id} - ${l2Name}` === selected.L2 &&
+            l3Id && l3Name &&
+            `${l3Id} - ${l3Name}` === selected.L3 &&
+            l4Id && l4Name &&
+            `${l4Id} - ${l4Name}` === selected.L4 &&
+            l5Id && l5Name) {
+          
+          const l5Value = `${l5Id} - ${l5Name}`;
+          if (!l5ForLanguage.includes(l5Value)) {
+            l5ForLanguage.push(l5Value);
+          }
+        }
+      });
+      
+      return l5ForLanguage.sort();
+    }
+    
+    return [];
+  };
+
+  const filteredL1 = getFilteredCategories('L1');
+  const filteredL2 = getFilteredCategories('L2');
+  const filteredL3 = getFilteredCategories('L3');
+  const filteredL4 = getFilteredCategories('L4');
+  const filteredL5 = getFilteredCategories('L5');
+
   // Função para buscar correspondências
   const searchCategories = (term) => {
     if (!term.trim() || !categories.allData.length) return [];
@@ -89,11 +297,27 @@ function PrincipalComponent() {
       const l0 = item.cluster?.trim() || '';
       const l1Id = item.level1_global_be_category_id?.trim() || '';
       const l1Name = item.level1_global_be_category?.trim() || '';
+      const l2Id = item.level2_global_be_category_id?.trim() || '';
+      const l2Name = item.level2_global_be_category?.trim() || '';
+      const l3Id = item.level3_global_be_category_id?.trim() || '';
+      const l3Name = item.level3_global_be_category?.trim() || '';
+      const l4Id = item.level4_global_be_category_id?.trim() || '';
+      const l4Name = item.level4_global_be_category?.trim() || '';
+      const l5Id = item.level5_global_be_category_id?.trim() || '';
+      const l5Name = item.level5_global_be_category?.trim() || '';
       
       return (
         normalizeString(l0).includes(normalizedTerm) ||
         l1Id.includes(term) || // Busca exata por ID
-        normalizeString(l1Name).includes(normalizedTerm)
+        l2Id.includes(term) ||
+        l3Id.includes(term) ||
+        l4Id.includes(term) ||
+        l5Id.includes(term) ||
+        normalizeString(l1Name).includes(normalizedTerm) ||
+        normalizeString(l2Name).includes(normalizedTerm) ||
+        normalizeString(l3Name).includes(normalizedTerm) ||
+        normalizeString(l4Name).includes(normalizedTerm) ||
+        normalizeString(l5Name).includes(normalizedTerm)
       );
     });
   };
@@ -109,6 +333,11 @@ function PrincipalComponent() {
       download: true,
       header: true,
       complete: (results) => {
+        // Log para depuração - verificar as chaves disponíveis
+        if (results.data && results.data.length > 0) {
+          console.log('Primeira linha dos dados:', Object.keys(results.data[0]));
+        }
+        
         // Normalizar cabeçalhos
         const normalizedRows = results.data.map((row) => {
           const clean = {};
@@ -123,27 +352,108 @@ function PrincipalComponent() {
           }
           return clean;
         });
+        
+        // Verificar se a coluna de idioma existe
+        const firstRow = normalizedRows[0];
+        const hasLanguageColumn = firstRow && 'language' in firstRow;
+        console.log('Contém coluna de idioma?', hasLanguageColumn);
 
-        // Extrair categorias L0 únicas
+        // Extrair categorias L0 únicas por idioma
+        const byLanguage = {};
+        
+        if (hasLanguageColumn) {
+          // Se a coluna de idioma existe, agrupar por idioma
+          normalizedRows.forEach(row => {
+            const language = row.language?.trim() || 'English';
+            const l0 = row.cluster?.trim();
+            
+            if (!byLanguage[language]) {
+              byLanguage[language] = { L0: new Set() };
+            }
+            
+            if (l0) {
+              byLanguage[language].L0.add(l0);
+            }
+          });
+        } else {
+          // Se não houver coluna de idioma, usar todos os dados em um único idioma
+          const defaultLanguage = 'Português';
+          byLanguage[defaultLanguage] = { L0: new Set() };
+          
+          normalizedRows.forEach(row => {
+            const l0 = row.cluster?.trim();
+            if (l0) {
+              byLanguage[defaultLanguage].L0.add(l0);
+            }
+          });
+        }
+        
+        // Converter Sets para Arrays
+        Object.keys(byLanguage).forEach(lang => {
+          byLanguage[lang].L0 = Array.from(byLanguage[lang].L0);
+        });
+        
+        console.log('Idiomas disponíveis:', Object.keys(byLanguage));
+
+        // Extrair categorias L0 únicas (todas)
         const l0Categories = [...new Set(
           normalizedRows
             .map(row => row.cluster?.trim())
             .filter(Boolean)
         )];
 
-        // Mapear L0 para L1 com ID e Nome
+        // Mapear categorias por nível
         const l1Categories = {};
+        const l2Categories = {};
+        const l3Categories = {};
+        const l4Categories = {};
+        const l5Categories = {};
+
         normalizedRows.forEach(row => {
           const l0 = row.cluster?.trim();
+          
+          // L1 Categories
           const l1Id = row.level1_global_be_category_id?.trim();
           const l1Name = row.level1_global_be_category?.trim();
-          
           if (l0 && l1Id && l1Name) {
-            if (!l1Categories[l0]) {
-              l1Categories[l0] = new Set();
-            }
-            // Formatar como 'ID - Nome'
+            if (!l1Categories[l0]) l1Categories[l0] = new Set();
             l1Categories[l0].add(`${l1Id} - ${l1Name}`);
+          }
+          
+          // L2 Categories
+          const l2Id = row.level2_global_be_category_id?.trim();
+          const l2Name = row.level2_global_be_category?.trim();
+          const l1Key = l0 && l1Id && l1Name ? `${l0}__${l1Id} - ${l1Name}` : null;
+          if (l1Key && l2Id && l2Name) {
+            if (!l2Categories[l1Key]) l2Categories[l1Key] = new Set();
+            l2Categories[l1Key].add(`${l2Id} - ${l2Name}`);
+          }
+          
+          // L3 Categories
+          const l3Id = row.level3_global_be_category_id?.trim();
+          const l3Name = row.level3_global_be_category?.trim();
+          const l2Key = l1Key && l2Id && l2Name ? `${l1Key}__${l2Id} - ${l2Name}` : null;
+          if (l2Key && l3Id && l3Name) {
+            if (!l3Categories[l2Key]) l3Categories[l2Key] = new Set();
+            l3Categories[l2Key].add(`${l3Id} - ${l3Name}`);
+          }
+          
+          // L4 Categories
+          const l4Id = row.level4_global_be_category_id?.trim();
+          const l4Name = row.level4_global_be_category?.trim();
+          const l3Key = l2Key && l3Id && l3Name ? `${l2Key}__${l3Id} - ${l3Name}` : null;
+          if (l3Key && l4Id && l4Name) {
+            if (!l4Categories[l3Key]) l4Categories[l3Key] = new Set();
+            l4Categories[l3Key].add(`${l4Id} - ${l4Name}`);
+          }
+          
+          // L5 Categories
+          const l5Id = row.level5_global_be_category_id?.trim();
+          const l5Name = row.level5_global_be_category?.trim();
+          const l4Key = l3Key && l4Id && l4Name ? `${l3Key}__${l4Id} - ${l4Name}` : null;
+          if (l4Key && l5Id && l5Name) {
+            if (!l5Categories[l4Key]) l5Categories[l4Key] = new Set();
+            l5Categories[l4Key].add(`${l5Id} - ${l5Name}`);
           }
         });
 
@@ -153,10 +463,24 @@ function PrincipalComponent() {
           l1CategoriesFormatted[key] = Array.from(l1Categories[key]);
         });
 
+        // Converter todos os Sets para objetos com arrays
+        const formatCategoryObject = (categoryObj) => {
+          const formatted = {};
+          Object.keys(categoryObj).forEach(key => {
+            formatted[key] = Array.from(categoryObj[key]);
+          });
+          return formatted;
+        };
+
         setCategories({
           L0: l0Categories,
-          L1: l1CategoriesFormatted,
-          allData: normalizedRows // Salvar todos os dados para busca
+          l1: formatCategoryObject(l1Categories),
+          l2: formatCategoryObject(l2Categories),
+          l3: formatCategoryObject(l3Categories),
+          l4: formatCategoryObject(l4Categories),
+          l5: formatCategoryObject(l5Categories),
+          allData: normalizedRows, // Salvar todos os dados para busca
+          byLanguage: byLanguage   // Categorias agrupadas por idioma
         });
       },
       error: (err) => console.error("Erro ao carregar categorias:", err),
@@ -218,31 +542,99 @@ function PrincipalComponent() {
           <h2>Níveis de Categoria</h2>
           <CategorySelector>
             <Select
-              value={selected.L0}
-              onChange={(e) => handleSelectChange('L0', e.target.value)}
+              value={selected.language}
+              onChange={(e) => handleSelectChange('language', e.target.value)}
             >
-              <Option value="">Selecione um Cluster (L0)</Option>
-              {categories.L0.map((category, index) => (
-                <Option key={`l0-${index}`} value={category}>
-                  {category}
+              <Option value="">Selecione o Idioma</Option>
+              {availableLanguages.map((lang) => (
+                <Option key={lang} value={lang}>
+                  {lang}
                 </Option>
               ))}
             </Select>
 
             <Select
-              value={selected.L1}
-              onChange={(e) => handleSelectChange('L1', e.target.value)}
-              disabled={!selected.L0}
+              value={selected.L0}
+              onChange={(e) => handleSelectChange('L0', e.target.value)}
+              disabled={!selected.language}
             >
-              <Option value="">
-                {selected.L0 ? 'Selecione uma categoria L1' : 'Selecione um cluster L0 primeiro'}
-              </Option>
-              {selected.L0 && categories.L1[selected.L0]?.map((category, index) => (
-                <Option key={`l1-${index}`} value={category}>
+              <Option value="">Selecione o Cluster</Option>
+              {getFilteredCategories('L0').map((category) => (
+                <Option key={category} value={category}>
                   {category}
                 </Option>
               ))}
             </Select>
+
+            {filteredL1.length > 0 && (
+              <Select
+                value={selected.L1}
+                onChange={(e) => handleSelectChange('L1', e.target.value)}
+              >
+                <Option value="">Selecione a L1</Option>
+                {filteredL1.map((category) => (
+                  <Option key={category} value={category}>
+                    {category}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {filteredL2.length > 0 && (
+              <Select
+                value={selected.L2}
+                onChange={(e) => handleSelectChange('L2', e.target.value)}
+              >
+                <Option value="">Selecione a L2</Option>
+                {filteredL2.map((category) => (
+                  <Option key={category} value={category}>
+                    {category}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {filteredL3.length > 0 && (
+              <Select
+                value={selected.L3}
+                onChange={(e) => handleSelectChange('L3', e.target.value)}
+              >
+                <Option value="">Selecione a L3</Option>
+                {filteredL3.map((category) => (
+                  <Option key={category} value={category}>
+                    {category}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {filteredL4.length > 0 && (
+              <Select
+                value={selected.L4}
+                onChange={(e) => handleSelectChange('L4', e.target.value)}
+              >
+                <Option value="">Selecione a L4</Option>
+                {filteredL4.map((category) => (
+                  <Option key={category} value={category}>
+                    {category}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {filteredL5.length > 0 && (
+              <Select
+                value={selected.L5}
+                onChange={(e) => handleSelectChange('L5', e.target.value)}
+              >
+                <Option value="">Selecione a L5</Option>
+                {filteredL5.map((category) => (
+                  <Option key={category} value={category}>
+                    {category}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </CategorySelector>
 
           <div className="description-text">
