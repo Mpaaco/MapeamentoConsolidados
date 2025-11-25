@@ -13,7 +13,10 @@ import {
   CategorySelector,
   Select,
   Option,
-  DescriptionSection
+  DescriptionSection,
+  DetailsContainer,
+  InfoSection,
+  InfoItem
 } from "./styles";
 import Papa from "papaparse";
 
@@ -46,6 +49,14 @@ function PrincipalComponent() {
   
   // Estado para a descrição da categoria
   const [categoryDescription, setCategoryDescription] = useState('não possui descrição');
+  
+  // Estado para os detalhes da categoria selecionada
+  const [categoryDetails, setCategoryDetails] = useState({
+    localStatus: 'N/A',
+    cbStatus: 'N/A',
+    okList: 'N/A',
+    regulatoryAgency: 'N/A'
+  });
   
   // Idiomas disponíveis
   const availableLanguages = ['English', 'Português'];
@@ -85,11 +96,17 @@ function PrincipalComponent() {
     });
   };
 
-  // Efeito para atualizar a descrição quando a seleção mudar
+  // Efeito para atualizar a descrição e detalhes quando a seleção mudar
   useEffect(() => {
-    const findDescription = () => {
+    const updateCategoryDetails = () => {
       if (!selected.L0) {
         setCategoryDescription('não possui descrição');
+        setCategoryDetails({
+          localStatus: 'N/A',
+          cbStatus: 'N/A',
+          okList: 'N/A',
+          regulatoryAgency: 'N/A'
+        });
         return;
       }
 
@@ -124,14 +141,49 @@ function PrincipalComponent() {
       });
 
       // Atualiza a descrição se encontrou uma linha correspondente
-      if (selectedRow?.describe?.trim()) {
-        setCategoryDescription(selectedRow.describe.trim());
+      if (selectedRow) {
+        if (selectedRow.describe?.trim()) {
+          setCategoryDescription(selectedRow.describe.trim());
+        } else {
+          setCategoryDescription('não possui descrição');
+        }
+
+        // Log para depuração - verificar as chaves disponíveis na linha selecionada
+        console.log('Chaves disponíveis na linha selecionada:', Object.keys(selectedRow));
+        
+        // Verificar valores específicos para depuração
+        console.log('ok_list:', selectedRow.ok_list);
+        console.log('ok_list (tipo):', typeof selectedRow.ok_list);
+        console.log('regulatory_agency:', selectedRow.regulatory_agency);
+        console.log('regulatory_agency (tipo):', typeof selectedRow.regulatory_agency);
+        
+        // Atualiza os detalhes da categoria com verificação de nulo/indefinido
+        setCategoryDetails({
+          localStatus: selectedRow.local_status?.trim() || 'N/A',
+          cbStatus: selectedRow.cb_status?.trim() || 'N/A',
+          okList: selectedRow.ok_list?.trim() || 'N/A',
+          regulatoryAgency: selectedRow.regulatory_agency?.trim() || 'N/A'
+        });
+        
+        // Log dos detalhes que serão definidos
+        console.log('Detalhes da categoria definidos:', {
+          localStatus: selectedRow.local_status?.trim() || 'N/A',
+          cbStatus: selectedRow.cb_status?.trim() || 'N/A',
+          okList: selectedRow.ok_list?.trim() || 'N/A',
+          regulatoryAgency: selectedRow.regulatory_agency?.trim() || 'N/A'
+        });
       } else {
         setCategoryDescription('não possui descrição');
+        setCategoryDetails({
+          localStatus: 'N/A',
+          cbStatus: 'N/A',
+          okList: 'N/A',
+          regulatoryAgency: 'N/A'
+        });
       }
     };
 
-    findDescription();
+    updateCategoryDetails();
   }, [selected, categories.allData]);
 
   // Carregar métricas
@@ -152,7 +204,8 @@ function PrincipalComponent() {
 
   // Função para remover acentos e caracteres especiais
   const normalizeString = (str) => {
-    return str
+    if (!str) return '';
+    return String(str)
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '') // Remove acentos
       .toLowerCase()
@@ -340,39 +393,100 @@ function PrincipalComponent() {
   const filteredL4 = getFilteredCategories('L4');
   const filteredL5 = getFilteredCategories('L5');
 
-  // Função para buscar correspondências
+  /**
+   * Função para buscar categorias com base no termo de busca
+   * Retorna um array de itens formatados com os níveis hierárquicos
+   */
   const searchCategories = (term) => {
     if (!term.trim() || !categories.allData.length) return [];
     
     const normalizedTerm = normalizeString(term);
     
-    return categories.allData.filter(item => {
-      const l0 = item.cluster?.trim() || '';
-      const l1Id = item.level1_global_be_category_id?.trim() || '';
-      const l1Name = item.level1_global_be_category?.trim() || '';
-      const l2Id = item.level2_global_be_category_id?.trim() || '';
-      const l2Name = item.level2_global_be_category?.trim() || '';
-      const l3Id = item.level3_global_be_category_id?.trim() || '';
-      const l3Name = item.level3_global_be_category?.trim() || '';
-      const l4Id = item.level4_global_be_category_id?.trim() || '';
-      const l4Name = item.level4_global_be_category?.trim() || '';
-      const l5Id = item.level5_global_be_category_id?.trim() || '';
-      const l5Name = item.level5_global_be_category?.trim() || '';
+    return categories.allData
+      .filter(item => {
+        const l0 = item.cluster?.trim() || '';
+        const l1Id = item.level1_global_be_category_id?.trim() || '';
+        const l1Name = item.level1_global_be_category?.trim() || '';
+        const l2Id = item.level2_global_be_category_id?.trim() || '';
+        const l2Name = item.level2_global_be_category?.trim() || '';
+        const l3Id = item.level3_global_be_category_id?.trim() || '';
+        const l3Name = item.level3_global_be_category?.trim() || '';
+        const l4Id = item.level4_global_be_category_id?.trim() || '';
+        const l4Name = item.level4_global_be_category?.trim() || '';
+        const l5Id = item.level5_global_be_category_id?.trim() || '';
+        const l5Name = item.level5_global_be_category?.trim() || '';
+        
+        return (
+          normalizeString(l0).includes(normalizedTerm) ||
+          l1Id.includes(term) || // Busca exata por ID
+          l2Id.includes(term) ||
+          l3Id.includes(term) ||
+          l4Id.includes(term) ||
+          l5Id.includes(term) ||
+          normalizeString(l1Name).includes(normalizedTerm) ||
+          normalizeString(l2Name).includes(normalizedTerm) ||
+          normalizeString(l3Name).includes(normalizedTerm) ||
+          normalizeString(l4Name).includes(normalizedTerm) ||
+          normalizeString(l5Name).includes(normalizedTerm)
+        );
+      })
+      .map(item => ({
+        ...item,
+        // Adiciona campos formatados para facilitar a exibição
+        L0: item.cluster?.trim() || '',
+        L1: item.level1_global_be_category_id && item.level1_global_be_category 
+          ? `${item.level1_global_be_category_id.trim()} - ${item.level1_global_be_category.trim()}` 
+          : '',
+        L2: item.level2_global_be_category_id && item.level2_global_be_category 
+          ? `${item.level2_global_be_category_id.trim()} - ${item.level2_global_be_category.trim()}` 
+          : '',
+        L3: item.level3_global_be_category_id && item.level3_global_be_category 
+          ? `${item.level3_global_be_category_id.trim()} - ${item.level3_global_be_category.trim()}` 
+          : '',
+        L4: item.level4_global_be_category_id && item.level4_global_be_category 
+          ? `${item.level4_global_be_category_id.trim()} - ${item.level4_global_be_category.trim()}` 
+          : '',
+        L5: item.level5_global_be_category_id && item.level5_global_be_category 
+          ? `${item.level5_global_be_category_id.trim()} - ${item.level5_global_be_category.trim()}` 
+          : ''
+      }));
+  };
+
+  /**
+   * Função chamada quando um resultado da busca é selecionado
+   * Preenche automaticamente os filtros com os valores correspondentes
+   */
+  const handleSearchSelect = (item) => {
+    // Limpa a busca
+    setSearchTerm('');
+    
+    // Atualiza o estado com os valores encontrados
+    setSelected(prev => ({
+      ...prev,
+      language: item.language?.trim() || 'English',
+      L0: item.L0 || '',
+      L1: item.L1 || '',
+      L2: item.L2 || '',
+      L3: item.L3 || '',
+      L4: item.L4 || '',
+      L5: item.L5 || ''
+    }));
+    
+    // Encontra a linha completa para atualizar a descrição
+    const selectedRow = categories.allData.find(row => {
+      const rowL0 = row.cluster?.trim() || '';
+      const l1Id = row.level1_global_be_category_id?.trim() || '';
+      const l1Name = row.level1_global_be_category?.trim() || '';
+      const rowL1 = l1Id && l1Name ? `${l1Id} - ${l1Name}` : '';
       
-      return (
-        normalizeString(l0).includes(normalizedTerm) ||
-        l1Id.includes(term) || // Busca exata por ID
-        l2Id.includes(term) ||
-        l3Id.includes(term) ||
-        l4Id.includes(term) ||
-        l5Id.includes(term) ||
-        normalizeString(l1Name).includes(normalizedTerm) ||
-        normalizeString(l2Name).includes(normalizedTerm) ||
-        normalizeString(l3Name).includes(normalizedTerm) ||
-        normalizeString(l4Name).includes(normalizedTerm) ||
-        normalizeString(l5Name).includes(normalizedTerm)
-      );
+      return rowL0 === item.L0 && rowL1 === item.L1;
     });
+    
+    if (selectedRow?.describe?.trim()) {
+      setCategoryDescription(selectedRow.describe.trim());
+    } else {
+      setCategoryDescription('não possui descrição');
+    }
   };
 
   // Resultados da busca
@@ -388,21 +502,80 @@ function PrincipalComponent() {
       complete: (results) => {
         // Log para depuração - verificar as chaves disponíveis
         if (results.data && results.data.length > 0) {
-          console.log('Primeira linha dos dados:', Object.keys(results.data[0]));
+          console.log('Primeira linha dos dados brutos:', results.data[0]);
+          console.log('Chaves disponíveis (brutas):', Object.keys(results.data[0]));
+          
+          // Verificar se as colunas desejadas existem (com diferentes variações)
+          const firstRow = results.data[0];
+          const availableKeys = Object.keys(firstRow);
+          
+          console.log('Procurando por colunas relacionadas a OKList e Agência Regulatória:');
+          availableKeys.forEach(key => {
+            const lowerKey = key.toLowerCase();
+            if (lowerKey.includes('ok') || lowerKey.includes('list') || lowerKey.includes('agencia') || lowerKey.includes('regulat')) {
+              console.log(`Coluna encontrada: '${key}' com valor:`, firstRow[key]);
+            }
+          });
         }
         
         // Normalizar cabeçalhos
-        const normalizedRows = results.data.map((row) => {
+        const normalizedRows = results.data.map((row, index) => {
           const clean = {};
+          
+          // Log da primeira linha para depuração
+          if (index === 0) {
+            console.log('Primeira linha antes da normalização:', row);
+          }
+          
           for (const key in row) {
-            const cleanKey = key
+            if (!key) continue; // Pula chaves vazias
+            
+            // Primeiro, limpa a chave
+            let cleanKey = key
+              .toString() // Garante que é uma string
               .trim()
-              .replace(/^\uFEFF/, "")
-              .replace(/\s+/g, "_")
-              .replace(/[^\w_]/g, "")
-              .toLowerCase();
+              .replace(/^\uFEFF/, "") // Remove BOM se existir
+              .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único espaço
+              .trim();
+            
+            // Log para depuração
+            if (index === 0) {
+              console.log(`Processando chave: '${key}' -> '${cleanKey}'`);
+            }
+            
+            // Mapeia para os nomes de coluna esperados (case insensitive)
+            const lowerKey = cleanKey.toLowerCase();
+            
+            if (lowerKey.includes('ok') && lowerKey.includes('list')) {
+              cleanKey = 'ok_list';
+            } else if (lowerKey.includes('agencia') || lowerKey.includes('regulat')) {
+              cleanKey = 'regulatory_agency';
+            } else if (lowerKey.includes('local') && lowerKey.includes('status')) {
+              cleanKey = 'local_status';
+            } else if (lowerKey.includes('cb') && lowerKey.includes('status')) {
+              cleanKey = 'cb_status';
+            } else {
+              // Para outras colunas, usa a lógica original
+              cleanKey = cleanKey
+                .replace(/\s+/g, "_")
+                .replace(/[^\w_]/g, "")
+                .toLowerCase();
+            }
+            
+            // Log para depuração
+            if (index === 0 && (cleanKey === 'ok_list' || cleanKey === 'regulatory_agency' || 
+                               cleanKey === 'local_status' || cleanKey === 'cb_status')) {
+              console.log(`Mapeando '${key}' -> '${cleanKey}' com valor:`, row[key]);
+            }
+            
             clean[cleanKey] = row[key];
           }
+          
+          // Log para depuração - verificar as chaves normalizadas
+          if (row.cluster && row.cluster.includes('Alimentos')) { // Apenas para depuração
+            console.log('Linha de exemplo após normalização:', clean);
+          }
+          
           return clean;
         });
         
@@ -565,34 +738,19 @@ function PrincipalComponent() {
           />
           {searchTerm && searchResults.length > 0 && (
             <SearchResults>
-              {searchResults.map((item, index) => {
-                const l0 = item.cluster?.trim() || '';
-                const l1Id = item.level1_global_be_category_id?.trim() || '';
-                const l1Name = item.level1_global_be_category?.trim() || '';
-                const l1Display = l1Id && l1Name ? `${l1Id} - ${l1Name}` : '';
-                
-                return (
-                  <SearchResultItem 
-                    key={`result-${index}`}
-                    onClick={() => {
-                      setSelected({
-                        language: selected.language,
-                        L0: l0,
-                        L1: l1Display,
-                        L2: '',
-                        L3: '',
-                        L4: '',
-                        L5: ''
-                      });
-                      setSearchTerm('');
-                      setCategoryDescription('não possui descrição');
-                    }}
-                  >
-                    <div><strong>L0:</strong> {l0}</div>
-                    {l1Display && <div><strong>L1:</strong> {l1Display}</div>}
-                  </SearchResultItem>
-                );
-              })}
+              {searchResults.map((item, index) => (
+                <SearchResultItem 
+                  key={`result-${index}`}
+                  onClick={() => handleSearchSelect(item)}
+                >
+                  <div><strong>L0:</strong> {item.L0 || ''}</div>
+                  {item.L1 && <div><strong>L1:</strong> {item.L1}</div>}
+                  {item.L2 && <div><strong>L2:</strong> {item.L2}</div>}
+                  {item.L3 && <div><strong>L3:</strong> {item.L3}</div>}
+                  {item.L4 && <div><strong>L4:</strong> {item.L4}</div>}
+                  {item.L5 && <div><strong>L5:</strong> {item.L5}</div>}
+                </SearchResultItem>
+              ))}
             </SearchResults>
           )}
         </SearchBar>
@@ -695,15 +853,39 @@ function PrincipalComponent() {
               </Select>
             )}
           
-          <DescriptionSection>
-            <h4>Descrição</h4>
-            <div>
-              <p>Categoria selecionada: <strong>{selected.L5 || selected.L4 || selected.L3 || selected.L2 || selected.L1 || selected.L0 || 'Nenhuma'}</strong></p>
-              {(selected.L0 || selected.language) && (
-                <p>{categoryDescription}</p>
-              )}
-            </div>
-          </DescriptionSection>
+          <DetailsContainer>
+            <DescriptionSection>
+              <h4>Descrição</h4>
+              <div>
+                <p>Categoria selecionada: <strong>{selected.L5 || selected.L4 || selected.L3 || selected.L2 || selected.L1 || selected.L0 || 'Nenhuma'}</strong></p>
+                {(selected.L0 || selected.language) && (
+                  <p>{categoryDescription}</p>
+                )}
+              </div>
+            </DescriptionSection>
+            
+            <InfoSection>
+              <InfoItem>
+                <h4>Local Status</h4>
+                <p>{categoryDetails.localStatus}</p>
+              </InfoItem>
+              
+              <InfoItem>
+                <h4>CB Status</h4>
+                <p>{categoryDetails.cbStatus}</p>
+              </InfoItem>
+              
+              <InfoItem>
+                <h4>OK List</h4>
+                <p>{categoryDetails.okList}</p>
+              </InfoItem>
+              
+              <InfoItem>
+                <h4>Agência Regulatória</h4>
+                <p>{categoryDetails.regulatoryAgency}</p>
+              </InfoItem>
+            </InfoSection>
+          </DetailsContainer>
           </CategorySelector>
         </CategoryLevel>
       </Conteudo>

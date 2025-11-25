@@ -259,11 +259,60 @@ export const DescriptionContainer = styled.div`
   }
 `;
 
-export const DescriptionSection = styled.div`
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
+export const DetailsContainer = styled.div`
+  display: flex;
+  margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
 
+export const DescriptionSection = styled.div`
+  flex: 1;
+  margin-top: 15px;
+  padding: 15px;
+  border-top: 1px solid #eee;
+  border-right: 1px solid #eee;
+  min-width: 300px;
+  max-width: 600px;
+`;
+
+export const InfoSection = styled.div`
+  flex: 2;
+  display: flex;
+  padding: 0;
+`;
+
+export const InfoItem = styled.div`
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  border-right: 1px solid #eee;
+  
+  &:last-child {
+    border-right: none;
+  }
+  
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    word-break: break-word;
+  }
+`;
+
+export const DescriptionSectionContent = styled.div`
   h4 {
     font-size: 16px;
     color: #333;
