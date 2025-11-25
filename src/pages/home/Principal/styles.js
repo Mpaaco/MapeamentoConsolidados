@@ -177,6 +177,8 @@ export const CategorySelector = styled.div`
   width: 800px;
   background: white;
   padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   h3 {
     font-size: 18px;
@@ -196,6 +198,38 @@ export const CategoryLevel = styled.div`
     color: #666;
     margin: 0;
     font-weight: 500;
+  }`;
+
+export const DescriptionContainer = styled.div`
+  width: 800px;
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-top: 15px;
+  
+  h4 {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 15px 0;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    border: 1px solid #eee;
+  }
+  
+  strong {
+    color: #0053DE;
   }
 
   select {
@@ -226,10 +260,33 @@ export const CategoryLevel = styled.div`
 `;
 
 export const DescriptionSection = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  margin-top: 30px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+
+  h4 {
+    font-size: 16px;
+    color: #333;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    border: 1px solid #eee;
+  }
+
+  strong {
+    color: #0053DE;
+  }
 
   .descricaocont{
     display: flex;

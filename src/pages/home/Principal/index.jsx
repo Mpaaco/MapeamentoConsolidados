@@ -12,7 +12,8 @@ import {
   SearchResultItem,
   CategorySelector,
   Select,
-  Option
+  Option,
+  DescriptionSection
 } from "./styles";
 import Papa from "papaparse";
 
@@ -42,6 +43,9 @@ function PrincipalComponent() {
     L4: '',
     L5: ''
   });
+  
+  // Estado para a descrição da categoria
+  const [categoryDescription, setCategoryDescription] = useState('não possui descrição');
   
   // Idiomas disponíveis
   const availableLanguages = ['English', 'Português'];
@@ -80,6 +84,55 @@ function PrincipalComponent() {
       return newState;
     });
   };
+
+  // Efeito para atualizar a descrição quando a seleção mudar
+  useEffect(() => {
+    const findDescription = () => {
+      if (!selected.L0) {
+        setCategoryDescription('não possui descrição');
+        return;
+      }
+
+      // Encontra a linha que corresponde à seleção atual
+      const selectedRow = categories.allData.find(row => {
+        const rowL0 = row.cluster?.trim();
+        const rowL1 = row.level1_global_be_category_id && row.level1_global_be_category 
+          ? `${row.level1_global_be_category_id.trim()} - ${row.level1_global_be_category.trim()}`
+          : '';
+        const rowL2 = row.level2_global_be_category_id && row.level2_global_be_category 
+          ? `${row.level2_global_be_category_id.trim()} - ${row.level2_global_be_category.trim()}`
+          : '';
+        const rowL3 = row.level3_global_be_category_id && row.level3_global_be_category 
+          ? `${row.level3_global_be_category_id.trim()} - ${row.level3_global_be_category.trim()}`
+          : '';
+        const rowL4 = row.level4_global_be_category_id && row.level4_global_be_category 
+          ? `${row.level4_global_be_category_id.trim()} - ${row.level4_global_be_category.trim()}`
+          : '';
+        const rowL5 = row.level5_global_be_category_id && row.level5_global_be_category 
+          ? `${row.level5_global_be_category_id.trim()} - ${row.level5_global_be_category.trim()}`
+          : '';
+
+        // Verifica se a linha corresponde à seleção atual
+        return (
+          rowL0 === selected.L0 &&
+          (!selected.L1 || rowL1 === selected.L1) &&
+          (!selected.L2 || rowL2 === selected.L2) &&
+          (!selected.L3 || rowL3 === selected.L3) &&
+          (!selected.L4 || rowL4 === selected.L4) &&
+          (!selected.L5 || rowL5 === selected.L5)
+        );
+      });
+
+      // Atualiza a descrição se encontrou uma linha correspondente
+      if (selectedRow?.describe?.trim()) {
+        setCategoryDescription(selectedRow.describe.trim());
+      } else {
+        setCategoryDescription('não possui descrição');
+      }
+    };
+
+    findDescription();
+  }, [selected, categories.allData]);
 
   // Carregar métricas
   useEffect(() => {
@@ -523,10 +576,16 @@ function PrincipalComponent() {
                     key={`result-${index}`}
                     onClick={() => {
                       setSelected({
+                        language: selected.language,
                         L0: l0,
-                        L1: l1Display
+                        L1: l1Display,
+                        L2: '',
+                        L3: '',
+                        L4: '',
+                        L5: ''
                       });
                       setSearchTerm('');
+                      setCategoryDescription('não possui descrição');
                     }}
                   >
                     <div><strong>L0:</strong> {l0}</div>
@@ -635,15 +694,17 @@ function PrincipalComponent() {
                 ))}
               </Select>
             )}
-          </CategorySelector>
-
-          <div className="description-text">
+          
+          <DescriptionSection>
             <h4>Descrição</h4>
-            <p>Categoria selecionada: <strong>{selected.L1 || 'Nenhuma'}</strong></p>
-            {selected.L1 && (
-              <p>Detalhes adicionais sobre a categoria selecionada serão exibidos aqui.</p>
-            )}
-          </div>
+            <div>
+              <p>Categoria selecionada: <strong>{selected.L5 || selected.L4 || selected.L3 || selected.L2 || selected.L1 || selected.L0 || 'Nenhuma'}</strong></p>
+              {(selected.L0 || selected.language) && (
+                <p>{categoryDescription}</p>
+              )}
+            </div>
+          </DescriptionSection>
+          </CategorySelector>
         </CategoryLevel>
       </Conteudo>
     </Principal>
