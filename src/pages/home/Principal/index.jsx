@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { Search } from 'react-feather';
 import {
   Principal, 
   Conteudo,
@@ -16,7 +17,10 @@ import {
   DescriptionSection,
   DetailsContainer,
   InfoSection,
-  InfoItem
+  InfoItem,
+  SearchButton,
+  CategoryHeader,
+  SearchContainer
 } from "./styles";
 import Papa from "papaparse";
 
@@ -729,34 +733,40 @@ function PrincipalComponent() {
           ))}
         </MetricsContainer>
 
-        <SearchBar>
-          <SearchInput 
-            type="text" 
-            placeholder="Pesquise por L0, ID L1 ou Nome L1..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && searchResults.length > 0 && (
-            <SearchResults>
-              {searchResults.map((item, index) => (
-                <SearchResultItem 
-                  key={`result-${index}`}
-                  onClick={() => handleSearchSelect(item)}
-                >
-                  <div><strong>L0:</strong> {item.L0 || ''}</div>
-                  {item.L1 && <div><strong>L1:</strong> {item.L1}</div>}
-                  {item.L2 && <div><strong>L2:</strong> {item.L2}</div>}
-                  {item.L3 && <div><strong>L3:</strong> {item.L3}</div>}
-                  {item.L4 && <div><strong>L4:</strong> {item.L4}</div>}
-                  {item.L5 && <div><strong>L5:</strong> {item.L5}</div>}
-                </SearchResultItem>
-              ))}
-            </SearchResults>
-          )}
-        </SearchBar>
-
         <CategoryLevel>
-          <h2>Níveis de Categoria</h2>
+          <CategoryHeader>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%' }}>
+              <h2 style={{ margin: 0, whiteSpace: 'nowrap' }}>Níveis de Categoria</h2>
+              <div style={{ flex: 1, maxWidth: '500px' }}>
+                <SearchBar>
+                  <SearchInput 
+                    type="text" 
+                    placeholder="Pesquise por L0, ID L1 ou Nome L1..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ marginBottom: 0 }}
+                  />
+                  {searchTerm && searchResults.length > 0 && (
+                    <SearchResults>
+                      {searchResults.map((item, index) => (
+                        <SearchResultItem 
+                          key={`result-${index}`}
+                          onClick={() => handleSearchSelect(item)}
+                        >
+                          <div><strong>L0:</strong> {item.L0 || ''}</div>
+                          {item.L1 && <div><strong>L1:</strong> {item.L1}</div>}
+                          {item.L2 && <div><strong>L2:</strong> {item.L2}</div>}
+                          {item.L3 && <div><strong>L3:</strong> {item.L3}</div>}
+                          {item.L4 && <div><strong>L4:</strong> {item.L4}</div>}
+                          {item.L5 && <div><strong>L5:</strong> {item.L5}</div>}
+                        </SearchResultItem>
+                      ))}
+                    </SearchResults>
+                  )}
+                </SearchBar>
+              </div>
+            </div>
+          </CategoryHeader>
           <CategorySelector>
             <Select
               value={selected.language}
