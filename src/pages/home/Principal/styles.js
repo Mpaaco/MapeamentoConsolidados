@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Principal = styled.div`
   flex: 1;
   padding: 30px;
-  overflow-y: auto;
+  overflow-y: visible;
   background: #f5f7fa;
   display: flex;
   flex-direction: column;
