@@ -27,12 +27,12 @@ export const Subtitle = styled.p`
   margin: 0 0 20px 0;
 `;
 
-export const SearchContainer = styled.div`
+export const SearchContainerA = styled.div`
   position: relative;
   margin-bottom: 20px;
 `;
 
-export const SearchInput = styled.input`
+export const SearchInputA = styled.input`
   width: 100%;
   padding: 10px 16px 10px 40px;
   border: 1px solid #E0E0E0;
@@ -51,7 +51,7 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const SearchIcon = styled.span`
+export const SearchIconA = styled.span`
   position: absolute;
   left: 12px;
   top: 50%;
@@ -61,19 +61,15 @@ export const SearchIcon = styled.span`
 
 export const FilterContainer = styled.div`
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 12px;
-  }
+  width: 100%;
+  max-width: 400px;
 `;
 
-export const Select = styled.select`
-  flex: 1;
-  min-width: 200px;
+export const SelectA = styled.select`
+  width: 100%;
   padding: 10px 16px;
   border: 1px solid #E0E0E0;
   border-radius: 6px;
@@ -87,9 +83,17 @@ export const Select = styled.select`
   background-size: 12px auto;
   cursor: pointer;
   outline: none;
+  transition: all 0.2s ease;
   
   &:focus {
     border-color: #4A90E2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
   }
 `;
 
@@ -97,6 +101,14 @@ export const Divider = styled.hr`
   border: none;
   border-top: 1px solid #E0E0E0;
   margin: 0 0 20px 0;
+`;
+
+export const LoadingText = styled.div`
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
 `;
 
 export const StatusContainer = styled.div`

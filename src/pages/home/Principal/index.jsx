@@ -56,10 +56,10 @@ function PrincipalComponent() {
   
   // Estado para os detalhes da categoria selecionada
   const [categoryDetails, setCategoryDetails] = useState({
-    localStatus: 'N/A',
-    cbStatus: 'N/A',
-    okList: 'N/A',
-    regulatoryAgency: 'N/A'
+    localStatus: '-',
+    cbStatus: '-',
+    okList: '-',
+    regulatoryAgency: '-'
   });
   
   // Idiomas disponíveis
@@ -106,10 +106,10 @@ function PrincipalComponent() {
       if (!selected.L0) {
         setCategoryDescription('não possui descrição');
         setCategoryDetails({
-          localStatus: 'N/A',
-          cbStatus: 'N/A',
-          okList: 'N/A',
-          regulatoryAgency: 'N/A'
+          localStatus: '-',
+          cbStatus: '-',
+          okList: '-',
+          regulatoryAgency: '-'
         });
         return;
       }
@@ -163,26 +163,26 @@ function PrincipalComponent() {
         
         // Atualiza os detalhes da categoria com verificação de nulo/indefinido
         setCategoryDetails({
-          localStatus: selectedRow.local_status?.trim() || 'N/A',
-          cbStatus: selectedRow.cb_status?.trim() || 'N/A',
-          okList: selectedRow.ok_list?.trim() || 'N/A',
-          regulatoryAgency: selectedRow.regulatory_agency?.trim() || 'N/A'
+          localStatus: selectedRow.local_status?.trim() || '-',
+          cbStatus: selectedRow.cb_status?.trim() || '-',
+          okList: selectedRow.ok_list?.trim() || '-',
+          regulatoryAgency: selectedRow.regulatory_agency?.trim() || '-'
         });
         
         // Log dos detalhes que serão definidos
         console.log('Detalhes da categoria definidos:', {
-          localStatus: selectedRow.local_status?.trim() || 'N/A',
-          cbStatus: selectedRow.cb_status?.trim() || 'N/A',
-          okList: selectedRow.ok_list?.trim() || 'N/A',
-          regulatoryAgency: selectedRow.regulatory_agency?.trim() || 'N/A'
+          localStatus: selectedRow.local_status?.trim() || '-',
+          cbStatus: selectedRow.cb_status?.trim() || '-',
+          okList: selectedRow.ok_list?.trim() || '-',
+          regulatoryAgency: selectedRow.regulatory_agency?.trim() || '-'
         });
       } else {
         setCategoryDescription('não possui descrição');
         setCategoryDetails({
-          localStatus: 'N/A',
-          cbStatus: 'N/A',
-          okList: 'N/A',
-          regulatoryAgency: 'N/A'
+          localStatus: '-',
+          cbStatus: '-',
+          okList: '-',
+          regulatoryAgency: '-'
         });
       }
     };
